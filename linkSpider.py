@@ -14,13 +14,13 @@ class Link:
         self.addQuery(qStr)
 
     def addQuery(self, qString):
-        if len(qString) > 0:
+        if qString != None and len(qString) > 0:
             self.query.add(qString)
 
     def __str__(self):
-        objStr = "{self.url}\n"
+        objStr = f"{self.url}\n"
         for q in self.query:
-            objStr = objStr + "\t{q}\n"
+            objStr = objStr + f"\t{q}\n"
         return objStr
 
     def __contains__(self, elem):
@@ -87,39 +87,32 @@ A Link Tree is defined as AvlTree<Link>
 '''
 def inLinkTree(url, tree):
     preQ, qStr = web.separateQuery(url)
-    link = tree.search(preQ)
-    if link == None:
+    node = tree.search(preQ)
+    if node == None:
         return False
     elif qStr == None or len(qStr) == 0:
         return True
     else:
-        return qStr in link
-
-
-'''
-Recursive helper function for systematically 
-exploring the paths from a given URL
-'''
-def recursiveCreateLinkTree(url, tree, depth):
-    if depth == 0:
-        return tree
-    elif depth < 0:
-        # Option for adding more complex searching (like only from a given domain)
-        return tree
-    else:
-        protocol, domain = getProtocolDomain(url)
+        link = node.data
+        if link == None:
+            return False
+        else:
+            return qStr in link.query
 
 
 def queueUpHrefs(url, pQueue, bTree, depth):
-    protocol, domain = web.getProtocolDomain(url)
-    href_list = web.extractHrefs(web.getSoup(url))
-    for href in href_list:
-        hrefElem = web.standardizeURL(url, href, domain, protocol)
-        if inLinkTree(hrefElem, bTree):
-            continue
-        else:
-            pQueue.add(hrefElem, depth)
-    return pQueue
+    if depth <= 0:
+        return pQueue
+    else:
+        protocol, domain = web.getProtocolDomain(url)
+        href_list = web.extractHrefs(web.getSoup(url))
+        for href in href_list:
+            hrefElem = web.standardizeURL(href, url, domain, protocol)
+            if inLinkTree(hrefElem, bTree):
+                continue
+            else:
+                pQueue.add(hrefElem, (depth-1))
+        return pQueue
 
 '''
 Returns a self-balanced tree representing various urls and their 
@@ -127,19 +120,19 @@ query strings, if any, found though exploration of hrefs.
 
 A Link Tree is defined as AvlTree<Link>
 '''
-def createLinkTree(startURL, maxDepth=3):
+def createLinkTree(startURL, maxDepth=0):
     tree = AvlTree(clashFunc=resolveClash, addFunc=createLink)
     priorityQueue = MaxHeap()
     priorityQueue.add(startURL, maxDepth)
     depth, currentURL = priorityQueue.next()
     while currentURL != None and (depth != None or depth > 0):
         tree.add(currentURL)
-        priorityQueue = queueUpHrefs(currentURL, priorityQueue, tree, (depth-1))
+        priorityQueue = queueUpHrefs(currentURL, priorityQueue, tree, depth)
         depth, currentURL = priorityQueue.next()
     return tree
 
 if __name__ == '__main__':
-    url = 'http://www.google.com'
+    url = 'https://www.google.com/search?q=lists+in+python&oq=lists+in+python&aqs=chrome..69i57j0l7.9755j0j8&sourceid=chrome&ie=UTF-8'
     tree = createLinkTree(url)
     treeList = tree.generateList()
     for elem in treeList:
