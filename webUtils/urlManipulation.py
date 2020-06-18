@@ -81,6 +81,11 @@ def isRelativeURL(url, domainStr):
 
 '''
 Standardize the URLs using the multiple methods above.
+
+link = url
+curURL = href
+domainStr = domain(link)
+protocolStr = protocol(link)
 '''
 def standardizeURL(link, curURL, domainStr, protocolStr="http://"):
     if isRelativeURL(link, domainStr):
