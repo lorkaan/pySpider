@@ -31,11 +31,17 @@ def lemmatizePosTuple(pos_tuples):
     lemmatizer = nltk.stem.WordNetLemmatizer()
     lemma_list = []
     for (token, pos_tag) in pos_tuples:
-        lemma_list.append(lemmatizer.lemmatize(token), pos=pos_tag)
+        try:
+            lemma_list.append(lemmatizer.lemmatize(token), pos=pos_tag)
+        except:
+            lemma_list.append(lemmatizer.lemmatize(token))
     return lemma_list
 
 def wordFrequency(tokens):
     return nltk.FreqDist(tokens)
+
+def getFreqDistFromLemmaPosTags(text):
+    return wordFrequency(lemmatizePosTuple(getPosTag(extractTokens(text))))
 
 def getMaxFreqDist(freqDist, num=0):
     return freqDist.most_common(num)
