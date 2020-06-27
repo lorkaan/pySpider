@@ -131,9 +131,15 @@ def createLinkTree(startURL, maxDepth=0):
         depth, currentURL = priorityQueue.next()
     return tree
 
+def getRelatedList(url):
+    tree = createLinkTree(url)
+    return tree.generateList()
+
+'''
 if __name__ == '__main__':
     url = 'https://www.google.com/search?q=lists+in+python&oq=lists+in+python&aqs=chrome..69i57j0l7.9755j0j8&sourceid=chrome&ie=UTF-8'
     tree = createLinkTree(url)
     treeList = tree.generateList()
     for elem in treeList:
         print(elem)
+'''
