@@ -21,3 +21,5 @@ def extractHrefs(soup):
             continue
     return hrefList
 
+def extractText(url):
+    return getSoup(url).get_text()

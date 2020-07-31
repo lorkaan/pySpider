@@ -1,6 +1,7 @@
-from datastruct.bst import TreeNode, AvlTree
-from datastruct.general import MaxHeap
-import webUtils as web
+from .datastruct.bst import TreeNode, AvlTree
+from .datastruct.general import MaxHeap
+from . import webUtils as web
+#from .webUitls import separateQuery, getSoup, standardizeURL
 
 '''
 Used to represent a url location with multiple query strings
